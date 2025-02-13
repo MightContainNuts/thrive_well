@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: 📚 Documentation Request
-    url: https://github.com/MightContainNuts/thrive_well/issues/new?template=documentation.md
-    about: Request updates or additions to the documentation.
