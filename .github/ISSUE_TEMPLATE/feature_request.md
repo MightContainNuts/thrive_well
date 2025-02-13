@@ -1,20 +1,24 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+# Feature Request Template
 
----
+## Feature: [Feature Name]
+As a [user/developer], I want [a feature] so that [benefit or reason].
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Scenario: Implementing the Feature
+Given the system is running,  
+When I interact with the new feature,  
+Then it should behave as expected and improve the user experience.
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## Details
+- **Feature Description:** [Briefly describe the feature]  
+- **Priority:** [Low / Medium / High]  
+- **Complexity:** [Small / Medium / Large]  
+- **Dependencies:** [List any required dependencies or other issues]  
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Acceptance Criteria
+- [ ] The feature is implemented according to requirements  
+- [ ] It includes appropriate tests and passes all checks  
+- [ ] It follows the project's coding and design guidelines  
+- [ ] It is documented properly in the codebase and user guide  
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## Additional Context
+[Provide any extra details, links, or references]
