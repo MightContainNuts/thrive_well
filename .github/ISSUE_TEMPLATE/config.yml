@@ -2,80 +2,25 @@ blank_issues_enabled: false
 
 templates:
   - name: "Bug Report"
-    about: "Create a bug report to track issues in the project."
-    title: "Bug Report"
-    labels: bug
-    assignees: []
-    body: |
-      ### Description
-      - [ ] Describe the issue you are encountering.
-      - [ ] What did you expect to happen?
-      - [ ] What did happen?
-      - [ ] Steps to reproduce:
-        1. 
-        2. 
-        3. 
+    description: "Create a bug report to track issues in the project."
+    filename: "bug_report.md"
 
   - name: "DevOps Issue"
-    about: "Report issues related to the infrastructure, deployment, or CI/CD pipeline."
-    title: "DevOps Issue"
-    labels: devops
-    assignees: []
-    body: |
-      ### Issue Summary
-      - [ ] What part of the pipeline or infrastructure is impacted?
-      - [ ] What is the impact on the project or team?
-      - [ ] Any error messages or logs?
-      - [ ] Expected behavior:
-      - [ ] Steps to reproduce:
-        1. 
-        2. 
-        3. 
+    description: "Report issues related to infrastructure, deployment, or CI/CD pipeline."
+    filename: "devops_issue.md"
 
   - name: "Documentation Request"
-    about: "Request an update or addition to the project documentation."
-    title: "Documentation Update Request"
-    labels: documentation
-    assignees: []
-    body: |
-      ### Documentation Update Request
-      - [ ] What part of the documentation needs to be updated?
-      - [ ] What should be added or changed?
-      - [ ] Additional details or context?
+    description: "Request an update or addition to the project documentation."
+    filename: "documentation_request.md"
 
   - name: "Feature Request"
-    about: "Request a new feature or improvement to the project."
-    title: "Feature Request"
-    labels: enhancement
-    assignees: []
-    body: |
-      ### Feature Description
-      - [ ] What feature would you like to see added?
-      - [ ] Why is this feature important?
-      - [ ] Any specific details or user stories?
+    description: "Request a new feature or improvement to the project."
+    filename: "feature_request.md"
 
   - name: "Refactoring Request"
-    about: "Suggest a refactor to improve the codebase or maintainability."
-    title: "Refactoring Request"
-    labels: refactoring
-    assignees: []
-    body: |
-      ### Refactoring Details
-      - [ ] What part of the code needs refactoring?
-      - [ ] Why should it be refactored (e.g., readability, performance)?
-      - [ ] Any suggestions for improvement?
+    description: "Suggest a refactor to improve the codebase or maintainability."
+    filename: "refactoring.md"
 
   - name: "Test Case"
-    about: "Create a new test case for the project, specifying what needs to be tested."
-    title: "Test Case"
-    labels: test
-    assignees: []
-    body: |
-      ### Test Case Description
-      - [ ] What feature or functionality should be tested?
-      - [ ] Expected outcome of the test:
-      - [ ] Any setup or preconditions for running the test?
-      - [ ] Steps to reproduce:
-        1. 
-        2. 
-        3. 
+    description: "Create a new test case for the project, specifying what needs to be tested."
+    filename: "test_case.md"
