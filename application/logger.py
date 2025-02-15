@@ -1,10 +1,12 @@
 import logging
+import sys
 from pathlib import Path
 
 
 def setup_logger(name: str) -> logging.Logger:
     """
-    Creates and configures a logger that writes to a central log file.
+    Creates and configures a logger that writes to both a log file and stdout
+    (for Heroku logs).
     :param name: Logger name, usually `__name__`.
     :return: Configured logger instance.
     """
@@ -16,7 +18,7 @@ def setup_logger(name: str) -> logging.Logger:
     if not logger.hasHandlers():  # Avoid duplicate handlers
         logger.setLevel(logging.INFO)
 
-        # File handler
+        # File handler (for local logs)
         file_handler = logging.FileHandler(log_file, mode="a")
         file_handler.setLevel(logging.INFO)
 
@@ -26,6 +28,13 @@ def setup_logger(name: str) -> logging.Logger:
         )
         file_handler.setFormatter(formatter)
 
+        # Stream handler (for Heroku logs)
+        stream_handler = logging.StreamHandler(sys.stdout)  # Log to stdout
+        stream_handler.setLevel(logging.INFO)
+        stream_handler.setFormatter(formatter)
+
+        # Add both handlers
         logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
 
     return logger
