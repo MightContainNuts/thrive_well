@@ -1,12 +1,6 @@
-from flask import Flask
+from application.logger import setup_logger
+from application.app_factory import create_app
 
-app = Flask(__name__)
+app = create_app("development")
 
-
-@app.route("/")
-def index():
-    return "Hello World"
-
-
-if __name__ == "__main__":
-    app.run
+logger = setup_logger(__name__)
