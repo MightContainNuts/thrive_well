@@ -13,8 +13,8 @@ assignees: ''
 As a user/developer, I want to report a bug so that it can be fixed to improve stability and functionality.
 
 ## Scenario: Reproducing the Bug
-Given [preconditions or setup],  
-When [action or event that triggers the bug],  
+Given [preconditions or setup],
+When [action or event that triggers the bug],
 Then [unexpected behavior that occurs].
 
 ## Steps to Reproduce
@@ -29,10 +29,10 @@ Then [unexpected behavior that occurs].
 [Describe what actually happened.]
 
 ## Environment
-- **OS:** [Windows / macOS / Linux / Other]  
-- **Browser/Version:** [If applicable]  
-- **Device:** [Desktop / Mobile / Other]  
-- **Branch/Commit:** [Git branch or commit hash]  
-- **Logs/Error Messages:**  
+- **OS:** [Windows / macOS / Linux / Other]
+- **Browser/Version:** [If applicable]
+- **Device:** [Desktop / Mobile / Other]
+- **Branch/Commit:** [Git branch or commit hash]
+- **Logs/Error Messages:**
 ```plaintext
 [Paste logs or error messages here]
