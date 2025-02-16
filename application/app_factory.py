@@ -14,5 +14,6 @@ def create_app():
     logger.info(f"Create new App instance using {config_name} configuration")
     config[config_name].init_app(app)
     app.register_blueprint(main)
-    logger.info("Registering Blueprints")
+    print("Config name:", config_name)
+    print("Available configs:", config.keys())
     return app
