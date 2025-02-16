@@ -18,6 +18,9 @@ def create_app():
     # Initialize any app extensions, e.g., database
     db.init_app(app)
     app.logger.info("Database connection established")
+    app.logger.info(
+        f"SQLALCHEMY_DATABASE_URI: {app.config.get('SQLALCHEMY_DATABASE_URI')}"
+    )
 
     # Configure logging
     handler = logging.StreamHandler(sys.stdout)
