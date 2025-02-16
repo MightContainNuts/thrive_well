@@ -12,7 +12,6 @@ venv/
 .venv/
 
 # Poetry
-poetry.lock
 
 # Distribution / packaging
 .Python
