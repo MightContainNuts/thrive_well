@@ -17,6 +17,7 @@ gunicorn = "^23.0.0"
 flask-sqlalchemy = "^3.1.1"
 python-dotenv = "^1.0.1"
 psycopg2 = "^2.9.10"
+psycopg2-binary = "^2.9.10"
 
 
 [build-system]
