@@ -11,9 +11,17 @@ logger = setup_logger(__name__)
 def create_app():
     app = Flask(__name__)
     config_name = os.environ.get("FLASK_ENV", "development")
-    logger.info(f"Create new App instance using {config_name} configuration")
-    config[config_name].init_app(app)
+
+    if config_name not in config:
+        raise ValueError(
+            f"Invalid FLASK_ENV '{config_name}'. Choose from: {list(config.keys())}"  # noqa E501
+        )
+
+    app.config.from_object(config[config_name]())
+    config[config_name]().init_app(app)
     app.register_blueprint(main)
+
     print("Config name:", config_name)
-    print("Available configs:", config.keys())
+    print("Available configs:", list(config.keys()))
+
     return app
