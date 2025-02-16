@@ -1,10 +1,19 @@
-from flask import Flask
-from application.config import config
-from application.db.db_init import db
-import os
 import logging
+import os
 import sys
+from pathlib import Path
+
+from dotenv import load_dotenv
+from flask import Flask
+from flask_migrate import Migrate
+
+from application.config import config
+from application.db_init import db
 from application.views.main_views import main
+
+base_dir = Path(__name__).parent.parent
+MIGRATION_DIR = base_dir / "application" / "db" / "migrations"
+load_dotenv()
 
 
 def create_app():
@@ -17,10 +26,17 @@ def create_app():
 
     # Initialize any app extensions, e.g., database
     db.init_app(app)
-    app.logger.info("Database connection established")
+    migrate = Migrate(app, db, directory=str(MIGRATION_DIR))  # noqa E841
+    with app.app_context():
+        pass
+        # db.create_all()
+
     app.logger.info(
-        f"SQLALCHEMY_DATABASE_URI: {app.config.get('SQLALCHEMY_DATABASE_URI')}"
-    )
+        f"Database URI: {app.config.get('SQLALCHEMY_DATABASE_URI')}"
+    )  # noqa E501
+    app.logger.info(f"FLASK_ENV: {os.environ.get('FLASK_ENV')}")
+    app.logger.info(f"DATABASE_URL: {os.environ.get('DATABASE_URL')}")
+    app.logger.info(f"App started - Config name: {config_name}")
 
     # Configure logging
     handler = logging.StreamHandler(sys.stdout)
