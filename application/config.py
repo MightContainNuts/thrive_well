@@ -1,13 +1,15 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 base_dir = Path(__name__).parent.parent
+MIGRATION_DIR = base_dir / "application" / "db" / "migrations"
 
 
 class Config:
 
     SECRET_KEY = os.environ.get("SECRET_KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MIGRATION_DIR = str(MIGRATION_DIR)
 
     @staticmethod
     def init_app(app):
