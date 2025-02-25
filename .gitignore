@@ -11,7 +11,8 @@ venv/
 .env/
 .venv/
 
-# Poetry
+# secrets
+.env
 
 # Distribution / packaging
 .Python
