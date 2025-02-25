@@ -15,22 +15,16 @@ base_dir = Path(__name__).parent.parent
 MIGRATION_DIR = base_dir / "application" / "db" / "migrations"
 load_dotenv()
 
-print(f"DATABASE_URL from .env: {os.getenv('DATABASE_URL')}")
-
 
 def create_app():
     app = Flask(__name__)
 
     config_name = os.environ.get("FLASK_ENV", "development")
-
-    print(f"Config name: {config_name}")
     app.config.from_object(
         config[config_name]()
     )  # Assuming config handles db URL and other settings
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     # Initialize any app extensions, e.g., database
-    print(f"Database URI: {app.config.get('SQLALCHEMY_DATABASE_URI')}")
-
     db.init_app(app)
     migrate = Migrate(app, db, directory=str(MIGRATION_DIR))  # noqa E841
     with app.app_context():
