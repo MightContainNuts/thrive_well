@@ -18,8 +18,8 @@ def auth_views(google):
             # Revoking the token using Google's revocation endpoint
             revoke_url = "https://oauth2.googleapis.com/revoke"
             response = requests.post(
-                revoke_url, params={"token": token["access_token"]}
-            )
+                revoke_url, data={"token": token["access_token"]}
+            )  # noqa E501
 
             if response.status_code == 200:
                 print("Successfully revoked the token.")
