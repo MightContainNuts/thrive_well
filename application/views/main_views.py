@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, session, redirect, url_for
 
 
 main = Blueprint("main", __name__)
@@ -6,6 +6,6 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    return """
-    Hello World!!!
-    """
+    if "user" not in session:
+        return redirect(url_for("auth.login"))
+    return f'user email: {session["user"]["email"]}'
