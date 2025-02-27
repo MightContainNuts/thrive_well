@@ -7,20 +7,30 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from flask_mail import Mail
+from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
 
 from application.config import config
 from application.db_init import db
 from application.views.main_views import main
 from application.views.auth_views import auth
+from application.views.user_views import user
+from application.db.models import User
 
 base_dir = Path(__name__).parent.parent
 MIGRATION_DIR = base_dir / "application" / "db" / "migrations"
 load_dotenv()
 
+mail = Mail()
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
 
 def create_app():
 
     app = Flask(__name__)
+    bootstrap = Bootstrap(app)
+    assert bootstrap  # flake complains about unused variable'
 
     config_name = os.environ.get("FLASK_ENV", "development")
     app.config.from_object(config[config_name]())
@@ -32,7 +42,12 @@ def create_app():
     migrate = Migrate(app, db, directory=str(MIGRATION_DIR))
     assert migrate  # flake complains about unused variable'
 
-    mail = Mail(app)
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
     app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")
     app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS")
@@ -58,7 +73,9 @@ def create_app():
     app.logger.addHandler(handler)
 
     # Register blueprints
+
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix="/auth")
+    app.register_blueprint(user, url_prefix="/user")
 
     return app
