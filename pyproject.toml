@@ -26,6 +26,7 @@ dotenv = "^0.9.9"
 requests = "^2.32.3"
 authlib = "^1.5.0"
 flask-testing = "^0.8.1"
+flask-mail = "^0.10.0"
 
 
 [build-system]
