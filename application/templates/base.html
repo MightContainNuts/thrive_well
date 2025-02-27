@@ -1,4 +1,12 @@
 {% extends "bootstrap/base.html" %}
+
+<!-- Place the CSS in the <head> section -->
+{% block head %}
+    {{ super() }}  <!-- This allows you to inherit any existing <head> content from the base template -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block title %}ThriveWell{% endblock %}
 
 {% block navbar %}
@@ -16,6 +24,13 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
+                        <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -27,4 +42,10 @@
         {% block page_content %}
         {% endblock %}
     </div>
+{% endblock %}
+
+<!-- Place the JS script right before the closing </body> -->
+{% block body_scripts %}
+    {{ super() }}  <!-- This allows you to inherit any existing <body> scripts from the base template -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 {% endblock %}
