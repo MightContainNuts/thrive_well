@@ -22,6 +22,7 @@ repos:
         language: python  # This tells pre-commit to use the system-installed flake8
         files: \.py$
         args: [ '--config=pyproject.toml' ]
+        exclude: "^venv/|^application/db/migrations/"
 
   # End-of-file fixer: ensures files end with a single newline
   - repo: https://github.com/pre-commit/pre-commit-hooks

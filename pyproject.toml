@@ -31,3 +31,7 @@ flask-testing = "^0.8.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+exclude = ["venv/,  ./application/db/migrations/versions/"]
+max-line-length = 79  # Example of another setting
