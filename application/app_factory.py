@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
+from flask_mail import Mail
 
 from application.config import config
 from application.db_init import db
@@ -27,8 +28,19 @@ def create_app():
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
     db.init_app(app)
+
     migrate = Migrate(app, db, directory=str(MIGRATION_DIR))
-    assert migrate
+    assert migrate  # flake complains about unused variable'
+
+    mail = Mail(app)
+    app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+    app.config["MAIL_PORT"] = os.getenv("MAIL_PORT")
+    app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS")
+    app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL")
+    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+
+    mail.init_app(app)
 
     # Log the configuration
     app.logger.info(f"App started - Config name: {config_name}")
