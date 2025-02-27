@@ -1,0 +1,55 @@
+/* styles.css */
+
+/* Custom background color for the body */
+body {
+    background-color: #f4f4f9;
+}
+
+/* Navbar styles */
+.navbar-inverse {
+    background-color: #343a40;
+    border-color: #454d55;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #f8f9fa;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #f8f9fa;
+}
+
+/* Example for customizing login button */
+.btn-login {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.btn-login:hover {
+    background-color: #0056b3;
+}
+
+/* Customize the profile section */
+.profile-container {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.profile-container h2 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Example media query for smaller screens */
+@media (max-width: 768px) {
+    .navbar-inverse .navbar-nav > li {
+        text-align: center;
+    }
+
+    .profile-container {
+        width: 100%;
+        padding: 10px;
+    }
+}
