@@ -3,18 +3,18 @@ from logging.config import fileConfig
 
 from flask import current_app
 from application.db.models import (  # noqa E401
-    Users,  # noqa E401
-    Profiles,  # noqa E401
+    User,  # noqa E401
+    Profile,  # noqa E401
     MoodHistory,  # noqa E401
     Activity,  # noqa E401
-    Journals,  # noqa E401
-    Plans,  # noqa E401
+    Journal,  # noqa E401
+    Plan,  # noqa E401
     MoodStatus,  # noqa E401
     RoleStatus,  # noqa E401
 )  # noqa E401
 
-# from application.db.models import Users,
-# Profiles, MoodHistory, Activity, Journals, Plans
+# from application.db.models import User,
+# Profile, MoodHistory, Activity, Journal, Plan
 
 from alembic import context
 

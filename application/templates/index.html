@@ -1,0 +1,14 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Landing Page{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Welcome back, {{ user.user_name }}!</h1>
+        <a href="{{ url_for('user.profile') }}">Go to your profile</a>
+    {% else %}
+        <h1>Welcome to ThriveWell</h1>
+        <a href="{{ url_for('auth.login') }}">Login</a> |
+        <a href="{{ url_for('auth.register') }}">Register</a>
+    {% endif %}
+{% endblock %}

@@ -5,6 +5,8 @@ from sqlalchemy import String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 from application.db_init import db
 
@@ -23,24 +25,39 @@ class RoleStatus(str, PyEnum):
     ADMIN = "admin"
 
 
-class Users(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
     user_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )  # noqa E501
     user_name = db.Column(String(64), unique=True)
     email = db.Column(String(100), unique=True)
+    password_hash = db.Column(String(256))
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
     role = db.Column(SQLEnum(RoleStatus), default=RoleStatus.USER)
     profile = relationship(
-        "Profiles",
+        "Profile",
         backref=db.backref("user", uselist=False),
         uselist=False,  # noqa E501
     )
 
+    @property
+    def password(self):
+        raise AttributeError("Password is not a readable attribute")
 
-class Profiles(db.Model):
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.user_id
+
+
+class Profile(db.Model):
     __tablename__ = "profiles"
     profile_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
@@ -71,7 +88,7 @@ class Activity(db.Model):
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.user_id"))
 
 
-class Journals(db.Model):
+class Journal(db.Model):
     __tablename__ = "journals"
     journal_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
@@ -82,11 +99,11 @@ class Journals(db.Model):
     sentiment = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
     created_on = db.Column(DateTime, default=func.now())
     profile = db.relationship(
-        "Profiles", backref=db.backref("journals", lazy=True)
+        "Profile", backref=db.backref("journals", lazy=True)
     )  # noqa E501
 
 
-class Plans(db.Model):
+class Plan(db.Model):
     __tablename__ = "plans"
     plan_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
@@ -96,5 +113,5 @@ class Plans(db.Model):
     )  # noqa E501
     created_on = db.Column(DateTime, default=func.now())
     profile = db.relationship(
-        "Profiles", backref=db.backref("plans", lazy=True)
+        "Profile", backref=db.backref("plans", lazy=True)
     )  # noqa E501
