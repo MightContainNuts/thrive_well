@@ -1,0 +1,17 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Profile - ThriveWell{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Your Profile</h1>
+        <p><strong>Name:</strong> {{ user.user_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Role:</strong> {{ user.role }}</p>
+        <p><strong>User ID:</strong> {{ user.id }}</p>
+
+        <!-- Add other user-specific details as needed -->
+
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+{% endblock %}
