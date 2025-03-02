@@ -1,4 +1,6 @@
 import logging
+import pgvector
+from pgvector.sqlalchemy import Vector
 from logging.config import fileConfig
 
 from flask import current_app
@@ -11,6 +13,7 @@ from application.db.models import (  # noqa E401
     Plan,  # noqa E401
     MoodStatus,  # noqa E401
     RoleStatus,  # noqa E401
+    VectorEmbeddings,  # noqa E401
 )  # noqa E401
 
 # from application.db.models import User,

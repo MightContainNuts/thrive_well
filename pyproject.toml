@@ -37,6 +37,9 @@ bs4 = "^0.0.2"
 pandas = "^2.2.3"
 selenium = "^4.29.0"
 webdriver-manager = "^4.0.2"
+pgvector = "^0.3.6"
+sentence-transformers = "^3.4.1"
+openai = "^1.65.2"
 
 
 [build-system]
