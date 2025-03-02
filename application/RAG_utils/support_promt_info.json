@@ -1,0 +1,52 @@
+{
+  "support_categories": [
+    {
+      "category": "Emotional Support",
+      "actions": [
+        "Be present and listen actively without trying to 'fix' things.",
+        "Offer reassurance and encouragement without minimizing their experience.",
+        "Respect their need for space when required."
+      ]
+    },
+    {
+      "category": "Practical Support",
+      "actions": [
+        "Assist with daily tasks like cooking, cleaning, or running errands.",
+        "Help manage medical appointments and transportation.",
+        "Organize a support network with family and friends."
+      ]
+    },
+    {
+      "category": "Nutritional and Health Support",
+      "actions": [
+        "Encourage a balanced diet with cancer-fighting foods (e.g., fruits, vegetables, whole grains, fatty fish).",
+        "Help with meal preparation that aligns with their dietary needs.",
+        "Ensure they stay hydrated and maintain proper nutrition during treatment."
+      ]
+    },
+    {
+      "category": "Medical and Treatment Support",
+      "actions": [
+        "Research treatment options and side effects to help them make informed decisions.",
+        "Accompany them to medical visits for emotional and logistical support.",
+        "Keep track of medications and treatment schedules."
+      ]
+    },
+    {
+      "category": "Mental and Social Well-being",
+      "actions": [
+        "Engage them in light activities that bring joy (movies, books, music).",
+        "Encourage social connections while respecting their energy levels.",
+        "Offer to help with childcare or work-related responsibilities."
+      ]
+    },
+    {
+      "category": "Long-term Support",
+      "actions": [
+        "Understand that support is needed beyond treatment—recovery can be long.",
+        "Advocate for their needs in medical or workplace settings.",
+        "Be patient with mood changes and mental health challenges."
+      ]
+    }
+  ]
+}
