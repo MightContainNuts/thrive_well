@@ -5,7 +5,13 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 
-load_dotenv()
+
+from sentence_transformers import SentenceTransformer
+from application.db_init import db
+from application.db.models import VectorEmbeddings
+from application.app import app
+
+
 
 
 def google_search(query):
@@ -25,20 +31,22 @@ def clean_text(page_text):
 
     for element in soup(
         ["script", "style", "header", "footer", "nav", "aside"]
-    ):  # noqa E501
+    ):  # noqa W501
+
         element.decompose()
 
     cleaned_text = soup.get_text()
     cleaned_text = re.sub(r"\s+", " ", cleaned_text)
     cleaned_text = cleaned_text.strip()
     cleaned_text = re.sub(
-        r"(Copyright|Privacy Policy|Terms of Service).*", "", cleaned_text  # noqa E501
-    )
 
+        r"(Copyright|Privacy Policy|Terms of Service).*", "", cleaned_text  # noqa W501
+    )
     return cleaned_text
 
 
-def scrape_page(google_search_results):
+def scrape_page(google_search_results, profile_id):
+
     scraped_data = []
     if not google_search_results:
         return None
@@ -61,9 +69,42 @@ def scrape_page(google_search_results):
 
     df = pd.DataFrame(scraped_data)
     print(df)
+
+    df["embedding"] = df["text"].apply(lambda x: generate_embedding(x))
+    df["profile_id"] = profile_id
     return df
 
 
+def generate_embedding(text):
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    return model.encode(text).tolist()
+
+
+def add_embeddings_to_db(row):
+    embedding_data = VectorEmbeddings(
+        profile_id=profile_id,
+        url=row["url"],
+        text=row["text"],
+        embedding=row["embedding"],
+    )
+    print(f"Adding data to the database: {embedding_data}")
+    with app.app_context():
+        try:
+            db.session.add(embedding_data)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error committing to the database: {e}")
+
+
+# Main function to start scraping, generate embeddings, and store them
 if __name__ == "__main__":
-    results = google_search(query="breast")
-    scrape_page(results)
+    query = "breast"
+    profile_id = "b926fc86-5ffd-4fc6-a777-e55669166140"
+    results = google_search(query=query)
+    dframe = scrape_page(results, profile_id)
+
+    if dframe is not None:
+        for _, row in dframe.iterrows():
+            add_embeddings_to_db(row)
+

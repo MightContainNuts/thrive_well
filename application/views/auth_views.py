@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template
 from flask_login import login_user, logout_user, login_required
 from application.forms import LoginForm, RegistrationForm
-from application.db.models import User
+
+from application.db.models import User, Profile
+
 from flask import flash, redirect, request, url_for
 from application.db_init import db
 
@@ -44,6 +46,15 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
+
+
+        profile = Profile(
+            user_id=user.user_id,  # Link profile to user via user_id
+            user_name=form.username.data,
+        )
+        db.session.add(profile)
+        db.session.commit()  # Commit to generate profile_id
+
 
         flash("You can now login.")
         return redirect(url_for("auth.login"))
