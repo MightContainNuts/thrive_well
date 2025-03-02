@@ -1,10 +1,10 @@
 from enum import Enum as PyEnum
 import uuid
-from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import String, DateTime
+from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, Float
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -114,4 +114,17 @@ class Plan(db.Model):
     created_on = db.Column(DateTime, default=func.now())
     profile = db.relationship(
         "Profile", backref=db.backref("plans", lazy=True)
+    )  # noqa E501
+
+
+class VectorEmbeddings(db.Model):
+    __tablename__ = "vector_embeddings"
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    url = db.Column(String, unique=True, nullable=False)
+    text = db.Column(Text, nullable=False)
+    created_on = db.Column(DateTime, default=func.now())
+    updated_on = db.Column(DateTime, default=func.now())
+    embedding = db.Column(ARRAY(Float), nullable=True)
+    profile_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )  # noqa E501
