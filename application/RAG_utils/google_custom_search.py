@@ -5,16 +5,18 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 
+
 from sentence_transformers import SentenceTransformer
 from application.db_init import db
 from application.db.models import VectorEmbeddings
 from application.app import app
 
-load_dotenv()
+
 
 
 def google_search(query):
     url = "https://www.googleapis.com/customsearch/v1"
+
     params = {
         "key": os.getenv("GOOGLE_SEARCH_API_KEY"),
         "cx": os.getenv("GOOGLE_SEARCH_ENGINE_ID"),
@@ -26,21 +28,25 @@ def google_search(query):
 
 def clean_text(page_text):
     soup = BeautifulSoup(page_text, "html.parser")
+
     for element in soup(
         ["script", "style", "header", "footer", "nav", "aside"]
     ):  # noqa W501
+
         element.decompose()
 
     cleaned_text = soup.get_text()
     cleaned_text = re.sub(r"\s+", " ", cleaned_text)
     cleaned_text = cleaned_text.strip()
     cleaned_text = re.sub(
+
         r"(Copyright|Privacy Policy|Terms of Service).*", "", cleaned_text  # noqa W501
     )
     return cleaned_text
 
 
 def scrape_page(google_search_results, profile_id):
+
     scraped_data = []
     if not google_search_results:
         return None
@@ -63,6 +69,7 @@ def scrape_page(google_search_results, profile_id):
 
     df = pd.DataFrame(scraped_data)
     print(df)
+
     df["embedding"] = df["text"].apply(lambda x: generate_embedding(x))
     df["profile_id"] = profile_id
     return df
@@ -100,3 +107,4 @@ if __name__ == "__main__":
     if dframe is not None:
         for _, row in dframe.iterrows():
             add_embeddings_to_db(row)
+

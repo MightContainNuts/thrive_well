@@ -1,6 +1,7 @@
 from enum import Enum as PyEnum
 import uuid
 
+
 from sqlalchemy import Enum as SQLEnum, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -8,6 +9,7 @@ from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from pgvector.sqlalchemy import Vector
+
 
 
 from application.db_init import db
@@ -48,6 +50,7 @@ class User(db.Model, UserMixin):
     def password(self):
         raise AttributeError("Password is not a readable attribute")
 
+
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -55,8 +58,7 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def get_id(self):
-        return self.user_id
+
 
 
 class Profile(db.Model):
@@ -126,7 +128,9 @@ class VectorEmbeddings(db.Model):
     text = db.Column(Text, nullable=False)
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
+
     embedding = db.Column(Vector(384), nullable=True)
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.user_id")
+
     )  # noqa E501
