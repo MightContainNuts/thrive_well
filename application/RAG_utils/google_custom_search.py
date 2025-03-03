@@ -1,6 +1,5 @@
 import os
 import requests
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
@@ -10,8 +9,6 @@ from sentence_transformers import SentenceTransformer
 from application.db_init import db
 from application.db.models import VectorEmbeddings
 from application.app import app
-
-
 
 
 def google_search(query):
@@ -39,7 +36,6 @@ def clean_text(page_text):
     cleaned_text = re.sub(r"\s+", " ", cleaned_text)
     cleaned_text = cleaned_text.strip()
     cleaned_text = re.sub(
-
         r"(Copyright|Privacy Policy|Terms of Service).*", "", cleaned_text  # noqa W501
     )
     return cleaned_text
@@ -97,7 +93,7 @@ def add_embeddings_to_db(row):
             print(f"Error committing to the database: {e}")
 
 
-# Main function to start scraping, generate embeddings, and store them
+# TODO  testing only - delete after testing
 if __name__ == "__main__":
     query = "breast"
     profile_id = "b926fc86-5ffd-4fc6-a777-e55669166140"
@@ -107,4 +103,3 @@ if __name__ == "__main__":
     if dframe is not None:
         for _, row in dframe.iterrows():
             add_embeddings_to_db(row)
-

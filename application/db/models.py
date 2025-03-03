@@ -11,7 +11,6 @@ from flask_login import UserMixin
 from pgvector.sqlalchemy import Vector
 
 
-
 from application.db_init import db
 
 
@@ -24,7 +23,6 @@ class MoodStatus(str, PyEnum):
 
 
 class RoleStatus(str, PyEnum):
-    MODERATOR = "moderator"
     USER = "user"
     ADMIN = "admin"
 
@@ -50,7 +48,6 @@ class User(db.Model, UserMixin):
     def password(self):
         raise AttributeError("Password is not a readable attribute")
 
-
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -59,14 +56,14 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
 
-
-
 class Profile(db.Model):
     __tablename__ = "profiles"
     profile_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )  # noqa E501
     user_name = db.Column(String(64), unique=True)
+    cancer_type = db.Column(String(100))
+    medication = db.Column(String(100))
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
     mood = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
@@ -131,6 +128,16 @@ class VectorEmbeddings(db.Model):
 
     embedding = db.Column(Vector(384), nullable=True)
     profile_id = db.Column(
-        UUID(as_uuid=True), db.ForeignKey("profiles.user_id")
-
+        UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )  # noqa E501
+
+
+class Medications(db.Model):
+    __tablename__ = "medications"
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = db.Column(String(100), unique=True)
+    fda_code = db.Column(String(10), unique=True)
+    description = db.Column(String(255))
+    side_effects = db.Column(Vector(384), nullable=True)
+    created_on = db.Column(DateTime, default=func.now())
+    updated_on = db.Column(DateTime, default=func.now())
