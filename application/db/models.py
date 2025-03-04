@@ -2,7 +2,7 @@ from enum import Enum as PyEnum
 import uuid
 
 
-from sqlalchemy import Enum as SQLEnum, String, DateTime, Text
+from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -12,14 +12,6 @@ from pgvector.sqlalchemy import Vector
 
 
 from application.db_init import db
-
-
-class MoodStatus(str, PyEnum):
-    VERY_POSITIVE = "very positive"
-    SOMEWHAT_POSITIVE = "somewhat positive"
-    NEUTRAL = "neutral"
-    SOMEWHAT_NEGATIVE = "somewhat negative"
-    VERY_NEGATIVE = "very negative"
 
 
 class RoleStatus(str, PyEnum):
@@ -66,18 +58,9 @@ class Profile(db.Model):
     medication = db.Column(String(100))
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
-    mood = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
     user_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("users.user_id"), unique=True
     )  # noqa E501
-
-
-class MoodHistory(db.Model):
-    __tablename__ = "mood_history"
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    mood = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
-    timestamp = db.Column(DateTime, default=func.now())
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.user_id"))
 
 
 class Activity(db.Model):
@@ -97,8 +80,9 @@ class Journal(db.Model):
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )  # noqa E501
-    sentiment = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
+    entry = db.Column(Text)
     created_on = db.Column(DateTime, default=func.now())
+    ai_response = db.Column(JSON)
     profile = db.relationship(
         "Profile", backref=db.backref("journals", lazy=True)
     )  # noqa E501

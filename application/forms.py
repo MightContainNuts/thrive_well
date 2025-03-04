@@ -49,3 +49,8 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(user_name=field.data).first():
             raise ValidationError("Username already in use.")
+
+
+class JournalForm(FlaskForm):
+    journal_entry = StringField("Journal Entry", validators=[DataRequired()])
+    submit = SubmitField("Submit")
