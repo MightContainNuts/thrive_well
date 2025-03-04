@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Journal - ThriveWell{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Journal</h1>
+        <p><strong>Journal:</strong> {{ user.user_name}}</p>
+        <p><strong>Journal ID:</strong> {{ user.profile.profile_id }}</p>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+
+<div>
+    {% if journal_entries %}
+    <h2>Journal Entries</h2>
+    <ul>
+        {% for entry in journal_entries %}
+        <li>
+            <h3>{{ entry.created_on }} Journal ID: {{ entry.journal_id}}</h3>
+            <p>{{ entry.entry }}</p>
+            <h3>Response</h3>
+            <p>Summary: {{ entry.ai_response.message }}</p>
+            <p>Mood: {{ entry.ai_response.response }}</p>
+            <p>Keywords: {{ entry.ai_response.keywords }}</p>
+
+        </li>
+        {% endfor %}
+    </ul>
+
+        {% else %}
+    <ul>
+        <p>No journal entries found.</p>
+
+    </ul>
+        {% endif %}
+
+
+</div>
+
+    <div class = "col-md-4">
+    {{ wtf.quick_form(form, action=url_for('gen.journal_response'), method='post') }}
+    </div>
+{% endblock %}

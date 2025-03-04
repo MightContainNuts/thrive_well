@@ -11,6 +11,7 @@
         <p><strong>User ID:</strong> {{ user.id }}</p>
 
         <!-- Add other user-specific details as needed -->
+        <a href="{{ url_for('user.journal') }}">Journal</a>
 
         <a href="{{ url_for('auth.logout') }}">Logout</a>
     </div>

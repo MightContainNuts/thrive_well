@@ -15,6 +15,7 @@ from application.db_init import db
 from application.views.main_views import main
 from application.views.auth_views import auth
 from application.views.user_views import user
+from application.views.generate_views import gen
 from application.db.models import User
 
 base_dir = Path(__name__).parent.parent
@@ -77,5 +78,6 @@ def create_app():
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(user, url_prefix="/user")
+    app.register_blueprint(gen, url_prefix="/gen")
 
     return app

@@ -97,8 +97,9 @@ class Journal(db.Model):
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )  # noqa E501
-    sentiment = db.Column(SQLEnum(MoodStatus), default=MoodStatus.NEUTRAL)
+    entry = db.Column(Text)
     created_on = db.Column(DateTime, default=func.now())
+    ai_response = db.Column(Text)
     profile = db.relationship(
         "Profile", backref=db.backref("journals", lazy=True)
     )  # noqa E501
