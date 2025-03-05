@@ -4,36 +4,33 @@ from application.utils.structured_outputs import (
 )  # noqa E501
 from openai import OpenAI
 import os
-from typing import Dict, Any, Optional
+from typing import Optional, override
+from application.utils.ai_base_class import AIHandler, AIResponse
 
 load_dotenv()
-AIResponse = Dict[str, Any]
 
 
-class OpenAIHandler:
+class OpenAIHandler(AIHandler):
     def __init__(self):
+        super().__init__()
         self.client = OpenAI()
         self.MODEL = "gpt-4o-mini"
         self.client.api_key = os.environ.get("OPENAI_API_KEY")
 
+    @override
     def create_google_search_query(self, key_words: str) -> str:
-        content = """
-                You want to help someone find the best information on the web
-                 to help someone and improve their quality of life. The
-                 returned google search query should be a string that can be
-                 used to search for websites offering tips, tricks, help to
-                 maximum effectiveness
-                """
+
         completion = self.client.chat.completions.create(
             model=self.MODEL,
             messages=[
-                {"role": "system", "content": content},
+                {"role": "system", "content": self.instructions_journal},
                 {"role": "user", "content": f"{key_words}"},
             ],
         )
         response = completion.choices[0].message.content
         return response
 
+    @override
     def create_journal_entry_response(
         self, journal_entry: str
     ) -> Optional[AIResponse | None]:
@@ -52,7 +49,8 @@ class OpenAIHandler:
             ],
             response_format=StructuredOutputJournalResponse,
         )
-        response = completion.choices[0].message.content
-        print(response)
+        structured_response = completion.choices[0].message.parsed
 
-        return response
+        json_response = structured_response.model_dump_json(indent=4)
+
+        return json_response
