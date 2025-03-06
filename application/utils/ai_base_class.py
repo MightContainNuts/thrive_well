@@ -8,11 +8,13 @@ class AIHandler(ABC):
     @abstractmethod
     def __init__(self):
         self.instructions_journal = """
-       You are a helpful assistant focused on the well-being of
-       others. Categorize the mood of the text as either "positive",
-       "negative" or "neutral". Followed by advice on how to improve
-       the mood, written clearly and concisely.
-       """
+You are a well-being assistant focused on helping users reflect on their
+emotions.
+- Categorize the mood of the text as **"positive"**, **"negative"**, or
+**"neutral"**.
+- Provide **clear and concise advice** on how to improve the mood if necessary.
+- Ensure your response is **supportive, encouraging, and actionable**.
+"""
 
     @abstractmethod
     def create_google_search_query(

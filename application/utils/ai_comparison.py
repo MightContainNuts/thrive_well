@@ -1,17 +1,8 @@
-from flask.cli import load_dotenv
-from google import genai
-from google.genai import types
+from application.utils.gemini_ai_handler import GeminiAIHandler
 from application.utils.open_ai_handler import OpenAIHandler
+from application.utils.groq_ai_handler import GroqAIHandler
+from concurrent.futures import ThreadPoolExecutor
 
-from application.utils.structured_outputs import (
-    StructuredOutputJournalResponse,
-)  # noqa E501
-import threading
-import os
-from typing import Optional, override
-from application.utils.ai_base_class import AIHandler, AIResponse
-
-load_dotenv()
 
 journal_entry = """
 Dear Diary,
@@ -50,31 +41,6 @@ Aragorn (The Slightly Disappointed)
 """
 
 
-class GeminiAIHandler(AIHandler):
-    def __init__(self):
-        super().__init__()
-        self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-    @override
-    def create_journal_entry_response(self, journal_entry: str) -> str:
-        response = self.client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=journal_entry,
-            config=types.GenerateContentConfig(
-                system_instruction=self.instructions_journal,
-                response_mime_type="application/json",
-                response_schema=StructuredOutputJournalResponse,
-            ),
-        )
-        return response.text
-
-    @override
-    def create_google_search_query(
-        self, google_search: str
-    ) -> Optional[AIResponse | None]:
-        pass
-
-
 def thread_1():
     handler = GeminiAIHandler()
     response = handler.create_journal_entry_response(journal_entry)
@@ -82,6 +48,7 @@ def thread_1():
     print("-" * 50)
     print(response)
     print("-" * 50)
+    return response
 
 
 def thread_2():
@@ -91,16 +58,37 @@ def thread_2():
     print("-" * 50)
     print(response)
     print("-" * 50)
+    return response
+
+
+def thread_3():
+    openai_handler = GroqAIHandler()
+    response = openai_handler.create_journal_entry_response(journal_entry)
+    print("Open Grok Handler")
+    print("-" * 50)
+    print(response)
+    print("-" * 50)
+    return response
 
 
 def run_in_threads():
-    thread1 = threading.Thread(target=thread_1)
-    thread2 = threading.Thread(target=thread_2)
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    results = []
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [
+            executor.submit(thread_1),
+            executor.submit(thread_2),
+            executor.submit(thread_3),
+        ]
+
+        for future in futures:
+            results.append(future.result())
+        return results
+
+
+def main():
+
+    run_in_threads()
 
 
 if __name__ == "__main__":
-    run_in_threads()
+    main()
