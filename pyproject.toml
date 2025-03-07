@@ -41,6 +41,7 @@ webdriver-manager = "^4.0.2"
 pgvector = "^0.3.6"
 sentence-transformers = "^3.4.1"
 openai = "^1.65.2"
+langchain-openai = "^0.3.7"
 
 
 
@@ -51,3 +52,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.flake8]
 exclude = ["venv/,  ./application/db/migrations/versions/"]
 max-line-length = 79  # Example of another setting
+
+[tool.black]
+line-length = 79
