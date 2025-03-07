@@ -1,7 +1,13 @@
 from application.db_init import db
-from application.db.models import User, Profile, Journal, Medications
+from application.db.models import (
+    User,
+    Profile,
+    Journal,
+    Medications,
+    ChatHistory,
+)
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 
 dt = datetime.now()
@@ -16,12 +22,14 @@ class DBHandler:
         self.Profile = Profile
         self.Journal = Journal
         self.Medications = Medications
+        self.ChatHistory = ChatHistory
 
     def add_and_commit(self, obj):
         """Add and commit an object to the database."""
         try:
             self.db.session.add(obj)
             self.db.session.commit()
+            print(f"Successfully added {obj} to the database.")
         except Exception as e:
             self.db.session.rollback()
             return str(e)
@@ -37,3 +45,32 @@ class DBHandler:
             ai_response=ai_response,
         )
         self.add_and_commit(journal_entry)
+
+    def write_chat_message_to_history(
+        self,
+        profile_id: str,
+        mood: str,
+        user_query: str,
+        ai_response: str,
+        keywords: List[str],
+    ) -> None:
+        """Write a chat message to the chat history table."""
+        chat_history = self.ChatHistory(
+            profile_id=profile_id,
+            user_query=user_query,
+            ai_response=ai_response,
+            keywords=keywords,
+            mood=mood,
+        )
+        print(chat_history)
+        self.add_and_commit(chat_history)
+
+    def get_chat_history(self, profile_id: str) -> str:
+        """Get chat history from the database."""
+        chat_str = ""
+        chat_history = self.ChatHistory.query.filter_by(
+            profile_id=profile_id
+        ).all()
+        for chat in chat_history:
+            chat_str += f"USER: {chat.user_query}\n BOT: {chat.ai_response} \n"
+        return chat_str

@@ -45,6 +45,7 @@ langchain-openai = "^0.3.7"
 google = "^3.0.0"
 google-genai = "^1.4.0"
 anthropic = "^0.49.0"
+langgraph = "^0.3.5"
 
 
 

@@ -4,7 +4,7 @@ from google.genai import types
 from application.utils.open_ai_handler import OpenAIHandler
 
 from application.utils.structured_outputs import (
-    StructuredOutputJournalResponse,
+    SO_Journal,
 )  # noqa E501
 import threading
 import os
@@ -63,7 +63,7 @@ class GeminiAIHandler(AIHandler):
             config=types.GenerateContentConfig(
                 system_instruction=self.instructions_journal,
                 response_mime_type="application/json",
-                response_schema=StructuredOutputJournalResponse,
+                response_schema=SO_Journal,
             ),
         )
         return response.text

@@ -3,7 +3,7 @@ import uuid
 
 
 from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,6 +17,11 @@ from application.db_init import db
 class RoleStatus(str, PyEnum):
     USER = "user"
     ADMIN = "admin"
+
+
+class MessageTypes(str, PyEnum):
+    SYSTEM = "system"
+    USER = "user"
 
 
 class User(db.Model, UserMixin):
@@ -125,3 +130,18 @@ class Medications(db.Model):
     side_effects = db.Column(Vector(384), nullable=True)
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
+
+
+class ChatHistory(db.Model):
+    __tablename__ = "chat_history"
+    chat_id = db.Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    profile_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
+    )
+    user_query = db.Column(Text)
+    ai_response = db.Column(Text)
+    mood = db.Column(String(100))
+    timestamp = db.Column(DateTime, default=func.now())
+    keywords = db.Column(ARRAY(String), nullable=True)
