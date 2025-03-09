@@ -3,7 +3,7 @@ from flask_login import login_required
 from flask_login import current_user
 from application.forms import JournalForm
 from application.db.models import Journal
-from application.db_init import db
+from application.utils.extensions import db
 import json
 
 user = Blueprint("user", __name__)

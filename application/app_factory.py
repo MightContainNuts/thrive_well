@@ -6,30 +6,31 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
-from flask_mail import Mail
-from flask_login import LoginManager
+
+
 from flask_bootstrap import Bootstrap
 
 from application.config import config
-from application.db_init import db
 from application.views.main_views import main
 from application.views.auth_views import auth
 from application.views.user_views import user
 from application.views.generate_views import gen
+from application.views.chat_view import chat_bp
 from application.db.models import User
+from application.utils.extensions import mail, login_manager, db
 
 base_dir = Path(__name__).parent.parent
 MIGRATION_DIR = base_dir / "application" / "db" / "migrations"
 load_dotenv()
 
-mail = Mail()
-login_manager = LoginManager()
+
 login_manager.login_view = "auth.login"
 
 
 def create_app():
 
     app = Flask(__name__)
+
     bootstrap = Bootstrap(app)
     assert bootstrap  # flake complains about unused variable'
 
@@ -79,5 +80,6 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(user, url_prefix="/user")
     app.register_blueprint(gen, url_prefix="/gen")
+    app.register_blueprint(chat_bp, url_prefix="/chat")
 
     return app

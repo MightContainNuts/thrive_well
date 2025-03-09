@@ -1,7 +1,4 @@
 from flask.cli import load_dotenv
-from application.utils.structured_outputs import (
-    StructuredOutputJournalResponse,
-)  # noqa E501
 from openai import OpenAI
 import os
 from typing import Optional, override
@@ -47,7 +44,6 @@ class OpenAIHandler(AIHandler):
                 {"role": "system", "content": content},
                 {"role": "user", "content": journal_entry},
             ],
-            response_format=StructuredOutputJournalResponse,
         )
         structured_response = completion.choices[0].message.parsed
 
