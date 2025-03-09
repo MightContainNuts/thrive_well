@@ -11,7 +11,7 @@ from flask_login import UserMixin
 from pgvector.sqlalchemy import Vector
 
 
-from application.db_init import db
+from application.utils.extensions import db
 
 
 class RoleStatus(str, PyEnum):
@@ -51,6 +51,10 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        # Return the `user_id` as a string, which is expected by Flask-Login
+        return str(self.user_id)
 
 
 class Profile(db.Model):

@@ -3,7 +3,6 @@ from openai import OpenAI
 import os
 from typing import Optional, override
 from application.utils.ai_base_class import AIHandler, AIResponse
-from application.utils.structured_outputs import SOJournal
 
 load_dotenv()
 
@@ -45,7 +44,6 @@ class OpenAIHandler(AIHandler):
                 {"role": "system", "content": content},
                 {"role": "user", "content": journal_entry},
             ],
-            response_format=SOJournal,
         )
         structured_response = completion.choices[0].message.parsed
 

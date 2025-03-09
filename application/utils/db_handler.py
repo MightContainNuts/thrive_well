@@ -1,4 +1,4 @@
-from application.db_init import db
+from application.utils.extensions import db
 from application.db.models import (
     User,
     Profile,
