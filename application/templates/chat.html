@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% extends "base.html" %}
+
+{% block title %}Chatbot - ThriveWell{% endblock %}
+
+{% block content %}
+
+
     <style>
         #chat-box {
             border: 1px solid #ccc;
-            height: 300px;
+            height: 600px;
             overflow-y: scroll;
             padding: 10px;
             margin-bottom: 10px;
@@ -17,8 +17,6 @@
             width: 80%;
         }
     </style>
-</head>
-<body>
     <h1>Chat</h1>
     <div id="chat-box"></div>
     <input type="text" id="message" placeholder="Type your message...">
@@ -61,5 +59,5 @@
         // Refresh chat every 2 seconds
         setInterval(fetchMessages, 2000);
     </script>
-</body>
-</html>
+
+{% endblock %}

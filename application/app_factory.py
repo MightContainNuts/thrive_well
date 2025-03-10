@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 
-
 from flask_bootstrap import Bootstrap
 
 from application.config import config
