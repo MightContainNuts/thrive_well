@@ -13,7 +13,7 @@ user_handlers = {}
 
 
 @chat_bp.route("/chatbot")
-def chat():
+def chatbot():
     return render_template("chat.html")  # Your chat interface
 
 
