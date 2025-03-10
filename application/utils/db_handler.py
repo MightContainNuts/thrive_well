@@ -46,21 +46,23 @@ class DBHandler:
         )
         self.add_and_commit(journal_entry)
 
-    def write_chat_message_to_history(
+    def write_chat_message_to_db(
         self,
         profile_id: str,
+        summary: str,
         mood: str,
-        user_query: str,
-        ai_response: str,
+        embedded_chunk: str,
         keywords: List[str],
     ) -> None:
         """Write a chat message to the chat history table."""
+
         chat_history = self.ChatHistory(
             profile_id=profile_id,
-            user_query=user_query,
-            ai_response=ai_response,
-            keywords=keywords,
+            summary=summary,
             mood=mood,
+            embedded_chunk=embedded_chunk,
+            keywords=keywords,
+            timestamp=formatted_dt,
         )
         print(chat_history)
         self.add_and_commit(chat_history)

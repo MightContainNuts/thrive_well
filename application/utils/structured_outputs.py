@@ -1,9 +1,8 @@
 from typing_extensions import TypedDict, Annotated
 
 
-class SOChat(TypedDict):
+class SOChatSummary(TypedDict):
 
-    success: Annotated[bool, "Whether the request was successful"]
-    ai_response: Annotated[str, "The message returned by the model"]
+    summary: Annotated[str, "Summary of the chat history"]
     mood: Annotated[str, "The mood of the text"]
     keywords: Annotated[list[str], "Keywords used in the text"]

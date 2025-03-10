@@ -144,8 +144,8 @@ class ChatHistory(db.Model):
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )
-    user_query = db.Column(Text)
-    ai_response = db.Column(Text)
+    embedded_chunk = db.Column(Vector(768), nullable=True)
+    summary = db.Column(Text)
     mood = db.Column(String(100))
     timestamp = db.Column(DateTime, default=func.now())
     keywords = db.Column(ARRAY(String), nullable=True)

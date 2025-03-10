@@ -6,7 +6,7 @@ import re
 
 
 from sentence_transformers import SentenceTransformer
-from application.db_init import db
+from application.utils.extensions import db
 from application.db.models import VectorEmbeddings
 from application.app import app
 
@@ -36,7 +36,9 @@ def clean_text(page_text):
     cleaned_text = re.sub(r"\s+", " ", cleaned_text)
     cleaned_text = cleaned_text.strip()
     cleaned_text = re.sub(
-        r"(Copyright|Privacy Policy|Terms of Service).*", "", cleaned_text  # noqa W501
+        r"(Copyright|Privacy Policy|Terms of Service).*",
+        "",
+        cleaned_text,  # noqa W501
     )
     return cleaned_text
 

@@ -1,7 +1,7 @@
 import requests
 from sentence_transformers import SentenceTransformer
+from application.utils.extensions import db
 
-from application.db_init import db
 from application.db.models import Medications
 from application.app import app
 

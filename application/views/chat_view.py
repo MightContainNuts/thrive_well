@@ -31,7 +31,6 @@ def send_message():
 
     llm_instance = user_handlers[current_user.profile.profile_id]
     ai_response = llm_instance.chatbot(msg)
-    ai_response = ai_response["ai_response"]
 
     print(f"AI Response: {ai_response}")
     chat_history.append({"sender": "user", "message": msg})

@@ -13,7 +13,6 @@ from application.config import config
 from application.views.main_views import main
 from application.views.auth_views import auth
 from application.views.user_views import user
-from application.views.generate_views import gen
 from application.views.chat_view import chat_bp
 from application.db.models import User
 from application.utils.extensions import mail, login_manager, db
@@ -78,7 +77,6 @@ def create_app():
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(user, url_prefix="/user")
-    app.register_blueprint(gen, url_prefix="/gen")
     app.register_blueprint(chat_bp, url_prefix="/chat")
 
     return app
