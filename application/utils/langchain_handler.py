@@ -1,16 +1,15 @@
 import os
-import time
-import threading
+
 from dotenv import load_dotenv
+from langchain.chains.summarize.refine_prompts import prompt_template
 from langchain_openai import ChatOpenAI
-from application.utils.structured_outputs import SOChatSummary
+from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
-from langchain.prompts import PromptTemplate
-from nltk.tokenize import word_tokenize
+from langchain_community.chat_message_histories import ChatMessageHistory
+from application.utils.structured_outputs import State
 
-from sentence_transformers import SentenceTransformer
 from typing_extensions import TypedDict
 from application.utils.db_handler import DBHandler
 from langchain_core.prompts.chat import (
@@ -36,9 +35,10 @@ class LangChainHandler:
         self.llm = self.init_model()
         self.workflow = self._init_workflow()
         self.chat_history = []
-        self.timer = None
-        self.inactivity_timeout = 30
-        self.last_message_time = time.time()
+        self.chat_summary = self.db_handler.get_chat_summary_from_db(
+            self.profile_id
+        )
+        self.memory = ChatMessageHistory()
 
     def __repr__(self):
         return (
@@ -61,8 +61,9 @@ class LangChainHandler:
         workflow = StateGraph(state_schema=MessagesState)
 
         # Define the function that calls the model
-        def call_model(state: MessagesState):
-            response = self.llm.invoke(state["messages"])
+        def call_model(state: State):
+            prompt = prompt_template.invoke(state)
+            response = self.llm.invoke(prompt)
             return {"messages": response}  # Append new messages
 
         # Add nodes and edges to the graph
@@ -80,27 +81,9 @@ class LangChainHandler:
             max_retries=self.max_retries,
         )
 
-    def start_inactivity_timer(self) -> None:
-        """Start a timer that triggers saving chat history if inactive."""
-        self.timer = threading.Timer(
-            self.inactivity_timeout, self.store_chat_history_to_db
-        )
-        self.timer.start()
-
-    def chatbot(self, user_query: str) -> AIResponse:
-        self.last_message_time = time.time()
-        if self.timer:
-            self.timer.cancel()
-
-        response = self.process_chat(user_query)
-
-        self.start_inactivity_timer()
-        return response
-
     def process_chat(self, user_query: str) -> AIResponse:
         """Analyze journal entry using LangChain with chat history"""
 
-        # Define initial system message
         content = """
         You are a helpful assistant focused on the well-being of
         others. Ypu always give accurate information and provide information
@@ -109,111 +92,53 @@ class LangChainHandler:
         and if you do not know the answer, say so.
         """
         system_message = SystemMessage(content=content)
+        config = {"configurable": {"profile_id": self.profile_id}}
 
-        history_messages = [
-            HumanMessage(content=entry["message"])
-            if entry["sender"] == "user"
-            else SystemMessage(content=entry["message"])
-            for entry in self.chat_history
-        ]
-        human_message = HumanMessage(content=user_query)
-        prompt = ChatPromptTemplate(
+        human_message = HumanMessage(user_query)
+        prompt = ChatPromptTemplate.from_messages(
             messages=[
                 system_message,
-                *history_messages,
+                MessagesPlaceholder(variable_name="messages"),
                 human_message,
             ]
         )
-
+        state = {
+            "messages": self.memory.messages,
+        }
         chain = prompt | self.llm
-        ai_msg = chain.invoke({})
+        ai_msg = chain.invoke(state, config=config)
 
-        self.update_chat_history({"sender": "user", "message": user_query})
-        self.update_chat_history({"sender": "ai", "message": ai_msg.content})
-        print(self.chat_history)
+        # Add the AI response to memory and chat history
+        self.memory.add_user_message(user_query)
+        self.memory.add_ai_message(ai_msg.content)
+
+        # Summarize and save chat history
+        self.summarize_chat()
+        self.save_chat_history()
 
         return ai_msg.content
 
     def update_chat_history(self, entry: dict):
         self.chat_history.append(entry)
 
-    def summarize_chat(self) -> Summary:
-        """Generate a summary of the chat session."""
-        prompt = PromptTemplate(
-            input_variables=["chat"],
-            template="""
-            Summarize the following conversation:
-            {chat}\n\nKeep it concise.""",
+    def summarize_chat(self):
+        """Summarize the conversation and analyze mood and keywords."""
+        chat_text = "\n".join(
+            [entry.content for entry in self.memory.messages]
         )
-        messages = [
-            SystemMessage(
-                content="""
-                You are a helpful assistant that summarizes conversations."""
-            ),
-            HumanMessage(
-                content=prompt.format(
-                    chat="\n".join(
-                        entry["message"] for entry in self.chat_history
-                    )
-                )
-            ),
-        ]
-        response = self.llm.with_structured_output(SOChatSummary).invoke(
-            messages
-        )
-        print(f"Summary (TimeOut): {response}")
-        return response
+        prompt = f"""
+        Summarize the following conversation:
+        {chat_text} plus {self.chat_summary}\n\n
+        Keep it concise.
+        """
+
+        response = self.llm.invoke([SystemMessage(content=prompt)])
+        self.chat_summary = response.content.strip()
+        return self.memory
 
     def save_chat_history(self):
-        print("Saving chat history")
-        assert self.chat_history
-
-    def chunk_chat_history(self, messages, max_tokens=512):
-        """Chunk the chat history into smaller pieces."""
-        chunks = []
-        current_chunk = []
-        current_tokens = 0
-
-        for msg in messages:
-            msg_tokens = len(msg)  # Get token count
-
-            if current_tokens + msg_tokens > max_tokens:
-                # Store current chunk if limit exceeded
-                chunks.append(" ".join(current_chunk))
-                current_chunk = []  # Start a new chunk
-                current_tokens = 0
-
-            current_chunk.append(msg)
-            current_tokens += msg_tokens
-
-        # Add last chunk if not empty
-        if current_chunk:
-            chunks.append(" ".join(current_chunk))
-
-        return chunks
-
-    def create_embedding_vector(self, chunk: str) -> str:
-        """Create an embedding vector for the chat history."""
-        model = SentenceTransformer("all-MiniLM-L6-v2")
-        return model.encode(chunk)
-
-    def tokenize_text(self, text: str) -> list:
-        """Tokenize the text into words."""
-        return word_tokenize(text)
-
-    def store_chat_history_to_db(self) -> None:
-        """Store the chat history in the database."""
-        summary = self.summarize_chat()
-        summary_text = summary["summary"]
-        summary_keywords = summary["keywords"]
-        summary_mood = summary["mood"]
-        chunks = self.chunk_chat_history(summary)
-        for chunk in chunks:
-            embedded_chunk = self.create_embedding_vector(chunk)
-            self.db_handler.write_chat_message_to_db(
-                profile_id=self.profile_id,
-                summary=summary_text,
-                mood=summary_mood,
-                embedded_chunk=embedded_chunk,
-                keywords=summary_keywords,
-            )
+        """Save the conversation to memory for future reference."""
+        self.db_handler.write_chat_summary_to_db(
+            profile_id=self.profile_id,
+            summary=self.chat_summary,
+        )
