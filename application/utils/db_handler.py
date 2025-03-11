@@ -4,10 +4,10 @@ from application.db.models import (
     Profile,
     Journal,
     Medications,
-    ChatHistory,
+    ChatSummary,
 )
 from datetime import datetime
-from typing import Optional, Union, List
+from typing import Optional, Union
 
 
 dt = datetime.now()
@@ -22,7 +22,7 @@ class DBHandler:
         self.Profile = Profile
         self.Journal = Journal
         self.Medications = Medications
-        self.ChatHistory = ChatHistory
+        self.ChatSummary = ChatSummary
 
     def add_and_commit(self, obj):
         """Add and commit an object to the database."""
@@ -46,31 +46,33 @@ class DBHandler:
         )
         self.add_and_commit(journal_entry)
 
-    def write_chat_message_to_history(
+    def write_chat_summary_to_db(
         self,
         profile_id: str,
-        mood: str,
-        user_query: str,
-        ai_response: str,
-        keywords: List[str],
+        summary: str,
     ) -> None:
         """Write a chat message to the chat history table."""
-        chat_history = self.ChatHistory(
+
+        chat_history = self.ChatSummary(
             profile_id=profile_id,
-            user_query=user_query,
-            ai_response=ai_response,
-            keywords=keywords,
-            mood=mood,
+            summary=summary,
+            timestamp=formatted_dt,
         )
-        print(chat_history)
+        print(
+            f"""
+        chat_history: {profile_id}:
+        ----------------
+        {summary}
+        ----------------"""
+        )
         self.add_and_commit(chat_history)
 
-    def get_chat_history(self, profile_id: str) -> str:
+    def get_chat_summary_from_db(
+        self, profile_id: str
+    ) -> Optional[str | None]:
         """Get chat history from the database."""
-        chat_str = ""
-        chat_history = self.ChatHistory.query.filter_by(
+        chat_summary = self.ChatSummary.query.filter_by(
             profile_id=profile_id
-        ).all()
-        for chat in chat_history:
-            chat_str += f"USER: {chat.user_query}\n BOT: {chat.ai_response} \n"
-        return chat_str
+        ).first()
+        if chat_summary:
+            return chat_summary.summary

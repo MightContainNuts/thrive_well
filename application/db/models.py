@@ -3,7 +3,7 @@ import uuid
 
 
 from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, JSON
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -136,16 +136,13 @@ class Medications(db.Model):
     updated_on = db.Column(DateTime, default=func.now())
 
 
-class ChatHistory(db.Model):
-    __tablename__ = "chat_history"
+class ChatSummary(db.Model):
+    __tablename__ = "chat_summary"
     chat_id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )
-    user_query = db.Column(Text)
-    ai_response = db.Column(Text)
-    mood = db.Column(String(100))
+    summary = db.Column(Text)
     timestamp = db.Column(DateTime, default=func.now())
-    keywords = db.Column(ARRAY(String), nullable=True)

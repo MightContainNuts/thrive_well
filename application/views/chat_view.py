@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    jsonify,
+)
 from flask_login import login_required, current_user
 from application.utils.langchain_handler import LangChainHandler
 
-
-# Handle incoming messages
 
 chat_bp = Blueprint("chat", __name__)
 
@@ -30,8 +33,7 @@ def send_message():
         )
 
     llm_instance = user_handlers[current_user.profile.profile_id]
-    ai_response = llm_instance.chatbot(msg)
-    ai_response = ai_response["ai_response"]
+    ai_response = llm_instance.process_chat(msg)
 
     print(f"AI Response: {ai_response}")
     chat_history.append({"sender": "user", "message": msg})
