@@ -1,5 +1,5 @@
 import logging
-import os
+import os, re
 import sys
 from pathlib import Path
 
@@ -34,7 +34,13 @@ def create_app():
 
     config_name = os.environ.get("FLASK_ENV", "development")
     app.config.from_object(config[config_name]())
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+
+    # Get DATABASE_URL and fix for Heroku if needed
+    database_url = os.getenv("DATABASE_URL")
+    if database_url and database_url.startswith("postgres://"):
+        database_url = re.sub("^postgres://", "postgresql://", database_url)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
     db.init_app(app)
