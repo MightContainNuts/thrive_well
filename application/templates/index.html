@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+
+{% block title %}Landing Page - ThriveWell{% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Left side (content, logo, etc.) -->
+            <div class="col-md-8">
+                <h1 class="display-4">Welcome to ThriveWell</h1>
+                <p class="lead">ThriveWell is your go-to platform for well-being, fitness, and personal growth. Track your progress, stay motivated, and connect with a community of like-minded individuals.</p>
+
+                <p>If you're looking to take the next step in your wellness journey, you've come to the right place!</p>
+
+                <div class="mt-4">
+                    {% if current_user.is_authenticated %}
+                        <p>Welcome back, {{ current_user.user_name }}!</p>
+                        <a class="btn btn-primary" href="{{ url_for('user.profile') }}">Go to your profile</a>
+                    {% else %}
+                        <p>New here? <a href="{{ url_for('auth.register') }}">Sign up now</a> or <a href="{{ url_for('auth.login') }}">log in</a> to get started.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right side (profile data or empty for guests) -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Profile Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if current_user.is_authenticated %}
+                            <p><strong>Name:</strong> {{ current_user.user_name }}</p>
+                            <p><strong>Email:</strong> {{ current_user.email }}</p>
+                            <p><strong>Role:</strong> {{ current_user.role }}</p>
+                        {% else %}
+                            <p>Not logged in.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 ThriveWell. All Rights Reserved.</p>
+            <p>Made with ❤️ by ThriveWell Team</p>
+        </div>
+    </footer>
+{% endblock %}

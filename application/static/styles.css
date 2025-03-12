@@ -1,0 +1,43 @@
+/* Basic reset */
+body, ul {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Brand left, menu right */
+    align-items: center;
+    background-color: #333; /* Dark background */
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+.nav {
+    display: flex;
+    list-style: none;
+    gap: 15px; /* Space between items */
+}
+
+.nav li a {
+    text-decoration: none;
+    color: white;
+    padding: 8px 12px;
+}
+
+.nav li a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+body {
+    background-color: #e6f7ff; /* Light blue */
+    color: #333; /* Dark gray for text - easy on the eyes */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}

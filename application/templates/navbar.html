@@ -1,0 +1,16 @@
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">ThriveWell</a>
+        <ul class="nav">
+            <li><a href="{{ url_for('main.index') }}">Home</a></li>
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('user.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                <li><a href="{{ url_for('chat.chatbot') }}">Chat</a></li>
+            {% else %}
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

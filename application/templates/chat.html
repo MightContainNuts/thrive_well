@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot - ThriveWell{% endblock %}
+
+{% block content %}
+
+
+    <style>
+        #chat-box {
+            border: 1px solid #ccc;
+            height: 600px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #message {
+            width: 80%;
+        }
+    </style>
+    <h1>Chat</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function fetchMessages() {
+            $.get('/chat/get_messages', function(messages) {
+                const chatBox = $('#chat-box');
+                chatBox.empty();  // Clear the chat box
+                messages.forEach(msg => {
+                    const messageElement = $('<div></div>').text(`${msg.sender}: ${msg.message}`);
+                    chatBox.append(messageElement);
+                });
+                chatBox.scrollTop(chatBox[0].scrollHeight);  // Auto-scroll to latest message
+            });
+        }
+
+        function sendMessage() {
+    const messageInput = $('#message');
+    const message = messageInput.val();
+    if (message) {
+        $.ajax({
+            url: '/chat/send_message',
+            type: 'POST',
+            contentType: 'application/json',  // Set the correct Content-Type
+            data: JSON.stringify({ message: message }),  // Convert data to JSON string
+            success: function(response) {
+                console.log("Response received:", response);
+                messageInput.val('');  // Clear input field
+                fetchMessages();  // Update the chat window
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", status, error);  // Log errors
+            }
+        });
+    }
+}
+
+        // Refresh chat every 2 seconds
+        setInterval(fetchMessages, 2000);
+    </script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+blank_issues_enabled: false
+
+templates:
+  - name: "Bug Report"
+    description: "Create a bug report to track issues in the project."
+    filename: "bug_report.md"
+
+  - name: "DevOps Issue"
+    description: "Report issues related to infrastructure, deployment, or CI/CD pipeline."
+    filename: "devops_issue.md"
+
+  - name: "Documentation Request"
+    description: "Request an update or addition to the project documentation."
+    filename: "documentation_request.md"
+
+  - name: "Feature Request"
+    description: "Request a new feature or improvement to the project."
+    filename: "feature_request.md"
+
+  - name: "Refactoring Request"
+    description: "Suggest a refactor to improve the codebase or maintainability."
+    filename: "refactoring.md"
+
+  - name: "Test Case"
+    description: "Create a new test case for the project, specifying what needs to be tested."
+    filename: "test_case.md"

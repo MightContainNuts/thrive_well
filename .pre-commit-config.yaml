@@ -1,0 +1,57 @@
+# .pre-commit-config.yaml
+
+repos:
+  - repo: git@github.com:pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+        additional_dependencies: [ black ]
+        args: [ '--config=pyproject.toml' ]
+
+  - repo: local
+    hooks:
+      - id: flake8
+        name: flake8
+        entry: flake8 --exclude=venv/*
+        language: python  # This tells pre-commit to use the system-installed flake8
+        files: \.py$
+        args: [ '--config=pyproject.toml' ]
+        exclude: "^venv/|^application/db/migrations/"
+
+  # End-of-file fixer: ensures files end with a single newline
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer
+
+    # Trim trailing whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        always_run: true

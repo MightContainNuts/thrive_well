@@ -13,6 +13,8 @@ venv/
 
 # Poetry
 poetry.lock
+# secrets
+.env
 
 # Distribution / packaging
 .Python

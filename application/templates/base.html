@@ -1,0 +1,29 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% include "navbar.html" %}
+<!-- Place the CSS in the <head> section -->
+{% block head %}
+    {{ super() }}  <!-- This allows you to inherit any existing <head> content from the base template -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+{% endblock %}
+
+{% block title %}ThriveWell{% endblock %}
+
+
+
+{% block content %}
+    <div class="container">
+        {% block page_content %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+<!-- Place the JS script right before the closing </body> -->
+{% block body_scripts %}
+    {{ super() }}  <!-- This allows you to inherit any existing <body> scripts from the base template -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+{% endblock %}

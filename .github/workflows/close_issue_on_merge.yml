@@ -1,0 +1,28 @@
+name: Close Issue After Merge
+
+on:
+  push:
+    branches:
+      - main  # Replace with your default branch name (e.g., 'master' or 'main')
+
+jobs:
+  close-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get issue number from branch name
+        id: issue_number
+        run: |
+          # Extract issue number from branch name (e.g., issue-123-in-progress -> 123)
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          ISSUE_NUMBER=$(echo $BRANCH_NAME | grep -o '[0-9]\+')
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+
+      - name: Close the issue
+        if: ${{ env.ISSUE_NUMBER }}
+        uses: peter-evans/close-issue@v2
+        with:
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          token: ${{ secrets.GITHUB_TOKEN }}
