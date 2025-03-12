@@ -51,7 +51,7 @@ pytest-sugar==1.0.0
 python-dotenv==1.0.1
 
 requests==2.32.3
-r
+
 SQLAlchemy==2.0.38
 
 virtualenv==20.29.3
