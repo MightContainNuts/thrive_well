@@ -3,7 +3,6 @@ from application.db.models import (
     User,
     Profile,
     Journal,
-    Medications,
     ChatSummary,
 )
 from datetime import datetime
@@ -21,7 +20,6 @@ class DBHandler:
         self.User = User
         self.Profile = Profile
         self.Journal = Journal
-        self.Medications = Medications
         self.ChatSummary = ChatSummary
 
     def add_and_commit(self, obj):

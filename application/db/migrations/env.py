@@ -1,6 +1,6 @@
 import logging
-import pgvector
-from pgvector.sqlalchemy import Vector
+
+
 from logging.config import fileConfig
 from application.app import create_app
 from flask import current_app
@@ -11,7 +11,6 @@ from application.db.models import (
     Journal,
     Plan,
     RoleStatus,
-    VectorEmbeddings,
 )
 from alembic import context
 

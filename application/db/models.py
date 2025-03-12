@@ -1,14 +1,13 @@
 from enum import Enum as PyEnum
 import uuid
 
-
 from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from pgvector.sqlalchemy import Vector
+
 
 
 from application.utils.extensions import db
@@ -109,31 +108,6 @@ class Plan(db.Model):
     profile = db.relationship(
         "Profile", backref=db.backref("plans", lazy=True)
     )  # noqa E501
-
-
-class VectorEmbeddings(db.Model):
-    __tablename__ = "vector_embeddings"
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    url = db.Column(String, unique=True, nullable=False)
-    text = db.Column(Text, nullable=False)
-    created_on = db.Column(DateTime, default=func.now())
-    updated_on = db.Column(DateTime, default=func.now())
-
-    embedding = db.Column(Vector(384), nullable=True)
-    profile_id = db.Column(
-        UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
-    )  # noqa E501
-
-
-class Medications(db.Model):
-    __tablename__ = "medications"
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = db.Column(String(100), unique=True)
-    fda_code = db.Column(String(10), unique=True)
-    description = db.Column(String(255))
-    side_effects = db.Column(Vector(384), nullable=True)
-    created_on = db.Column(DateTime, default=func.now())
-    updated_on = db.Column(DateTime, default=func.now())
 
 
 class ChatSummary(db.Model):
