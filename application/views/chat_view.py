@@ -26,7 +26,9 @@ def chatbot():
 def send_message():
     data = request.json
     msg = data.get("message")
-    print(f"Message received: {msg}")
+    print("\n" + "=" * 40)
+    print(f"📩 Message received: {msg}")
+    print("=" * 40 + "\n")
     if current_user.profile.profile_id not in user_handlers:
         user_handlers[current_user.profile.profile_id] = LangChainHandler(
             current_user.profile.profile_id
@@ -35,9 +37,13 @@ def send_message():
     llm_instance = user_handlers[current_user.profile.profile_id]
     ai_response = llm_instance.process_chat(msg)
 
-    print(f"AI Response: {ai_response}")
-    chat_history.append({"sender": "user", "message": msg})
-    chat_history.append({"sender": "ai", "message": ai_response})
+    print("\n" + "-" * 40)
+    print(f"🤖 AI Response:\n{ai_response}")
+    print("-" * 40 + "\n")
+    chat_history.append({"sender": "user", "message": f"👤 User: \n{msg}\n"})
+    chat_history.append(
+        {"sender": "ai", "message": f"🤖 AI: \n{ai_response}\n"}
+    )
 
     return jsonify({"response": ai_response})
 
