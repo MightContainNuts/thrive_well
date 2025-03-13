@@ -62,8 +62,6 @@ class Profile(db.Model):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )  # noqa E501
     user_name = db.Column(String(64), unique=True)
-    cancer_type = db.Column(String(100))
-    medication = db.Column(String(100))
     created_on = db.Column(DateTime, default=func.now())
     updated_on = db.Column(DateTime, default=func.now())
     user_id = db.Column(
