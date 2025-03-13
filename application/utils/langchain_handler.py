@@ -108,11 +108,9 @@ class LangChainHandler:
         chain = prompt | self.llm
         ai_msg = chain.invoke(state, config=config)
 
-        # Add the AI response to memory and chat history
         self.memory.add_user_message(user_query)
         self.memory.add_ai_message(ai_msg.content)
 
-        # Summarize and save chat history
         self.summarize_chat()
         self.save_chat_history()
 
@@ -123,12 +121,14 @@ class LangChainHandler:
 
     def summarize_chat(self):
         """Summarize the conversation and analyze mood and keywords."""
+
         chat_text = "\n".join(
             [entry.content for entry in self.memory.messages]
         )
+        self.chat_summary += chat_text
         prompt = f"""
         Summarize the following conversation:
-        {chat_text} plus {self.chat_summary}\n\n
+        {self.chat_summary}\n\n
         Keep it concise.
         """
 
