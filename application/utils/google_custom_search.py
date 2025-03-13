@@ -95,13 +95,3 @@ def add_embeddings_to_db(row):
             print(f"Error committing to the database: {e}")
 
 
-# TODO  testing only - delete after testing
-if __name__ == "__main__":
-    query = "breast"
-    profile_id = "b926fc86-5ffd-4fc6-a777-e55669166140"
-    results = google_search(query=query)
-    dframe = scrape_page(results, profile_id)
-
-    if dframe is not None:
-        for _, row in dframe.iterrows():
-            add_embeddings_to_db(row)
