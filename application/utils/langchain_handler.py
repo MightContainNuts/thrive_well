@@ -125,8 +125,8 @@ class LangChainHandler:
         chat_text = "\n".join(
             [entry.content for entry in self.memory.messages]
         )
-        if not chat_text:
-            chat_text = ""
+        if not self.chat_summary:
+            self.chat_summary = ""
         self.chat_summary += chat_text
         prompt = f"""
         Summarize the following conversation:
