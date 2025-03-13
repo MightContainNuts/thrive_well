@@ -1,14 +1,15 @@
 import os
+import json
 
 from dotenv import load_dotenv
-from langchain.chains.summarize.refine_prompts import prompt_template
+
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import MessagesPlaceholder
+
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
-from langchain_community.chat_message_histories import ChatMessageHistory
-from application.utils.structured_outputs import State
+
+from application.utils.structured_outputs import State, AssistantGuidelines
 
 from typing_extensions import TypedDict
 from application.utils.db_handler import DBHandler
@@ -30,11 +31,12 @@ class LangGraphHandler:
 
         self.profile_id = profile_id
         self.db_handler = DBHandler()
+        self.model = "gpt-4o-mini"
 
         self.memory = MemorySaver()
         self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
         self.llm = ChatOpenAI(
-            model="gpt-4o-mini",
+            model=self.model,
             temperature=0.7,
             max_retries=2,
         )
@@ -47,7 +49,7 @@ class LangGraphHandler:
 
 
     def __repr__(self):
-        return f"LangGraphHandler(model={self.llm.model}, profile_id={self.profile_id})"
+        return f"LangGraphHandler(model={self.model}, profile_id={self.profile_id})"
 
 
     def _init_workflow(self):
@@ -87,14 +89,38 @@ class LangGraphHandler:
         # Append to memory and construct state
 
         # Summarize and save the chat
-        self.summarize_chat(ai_message, user_query)
-        self.save_chat_history()
+        self._summarize_chat(ai_message, user_query)
+        self._save_chat_history()
 
         # Return the AI's response
         return ai_message
 
+    def is_user_query_valid(self, user_query: str) -> bool:
+        """Check if the user query is valid and doesn't go against the
+        assistant's guidelines."""
 
-    def summarize_chat(self, ai_message, user_query):
+        GUIDELINES = self._load_guidelines()
+        system_message = SystemMessage(content="""
+        You are an ethical assistant that follows the guidelines set
+        down in {GUIDELINES}.
+        Evaluate the user query and determine if it is within the guidelines.
+        """)
+
+        inputs = {
+            "system_message": system_message,
+            "user_query": user_query,
+        }
+        output = self.workflow.invoke(inputs).with_structured_outputs(AssistantGuidelines)
+        print(output)
+
+
+
+    def _load_guidelines(self):
+        """Load the guidelines for the assistant."""
+        with open("assistant_guidelines.json", "r") as file:
+            return json.load(file)
+
+    def _summarize_chat(self, ai_message, user_query):
         """Summarize the conversation and analyze mood and keywords."""
         print("Summarizing chat history...")
         print("-----------------------------")
@@ -110,10 +136,10 @@ class LangGraphHandler:
         self.chat_summary = self.llm.invoke(prompt).content
 
 
-
-    def save_chat_history(self):
+    def _save_chat_history(self):
         """Save the conversation to memory for future reference."""
         self.db_handler.write_chat_summary_to_db(
             profile_id=self.profile_id,
             summary=self.chat_summary,
         )
+

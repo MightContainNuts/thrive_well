@@ -1,0 +1,13 @@
+{
+  "unethical_keywords": [
+    "violence", "discrimination", "hate speech"
+  ],
+  "unethical_topics": [
+        "violence", "discrimination", "hate speech", "cloud viscosity"
+  ],
+  "acceptable_topics": [
+    "technology", "science", "politics", "sports", "entertainment", "social activities",
+    "health", "education", "business", "economy", "environment", "culture", "lifestyle",
+    "wellness", "travel", "food", "fashion", "beauty", "art", "music", "film", "literature"
+  ]
+}
