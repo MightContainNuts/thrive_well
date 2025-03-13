@@ -7,7 +7,6 @@ Create Date: 2025-03-11 11:45:55.420077
 """
 from alembic import op
 import sqlalchemy as sa
-import pgvector
 
 
 # revision identifiers, used by Alembic.
