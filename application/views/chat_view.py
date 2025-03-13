@@ -5,7 +5,7 @@ from flask import (
     jsonify,
 )
 from flask_login import login_required, current_user
-from application.utils.langchain_handler import LangChainHandler
+from application.utils.langchain_handler import LangGraphHandler
 
 
 chat_bp = Blueprint("chat", __name__)
@@ -30,7 +30,7 @@ def send_message():
     print(f"📩 Message received: {msg}")
     print("=" * 40 + "\n")
     if current_user.profile.profile_id not in user_handlers:
-        user_handlers[current_user.profile.profile_id] = LangChainHandler(
+        user_handlers[current_user.profile.profile_id] = LangGraphHandler(
             current_user.profile.profile_id
         )
 

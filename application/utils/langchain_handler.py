@@ -23,120 +23,93 @@ Summary = TypedDict(
 load_dotenv()
 
 
-class LangChainHandler:
+class LangGraphHandler:
     def __init__(self, profile_id: str):
-        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-        self.model = "gpt-4o-mini"
-        self.temperature = 0.7
-        self.max_retries = 2
+
+
+
         self.profile_id = profile_id
         self.db_handler = DBHandler()
+
         self.memory = MemorySaver()
-        self.llm = self.init_model()
-        self.workflow = self._init_workflow()
-        self.chat_history = []
+        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0.7,
+            max_retries=2,
+        )
+
         self.chat_summary = self.db_handler.get_chat_summary_from_db(
             self.profile_id
         )
-        self.memory = ChatMessageHistory()
+
+        self.workflow = self._init_workflow()
+
 
     def __repr__(self):
-        return (
-            f"LangChainHandler(model={self.model}, "
-            f"temperature={self.temperature}, "
-            f"max_retries={self.max_retries}),"
-            f"profile_id={self.profile_id}"
-        )
+        return f"LangGraphHandler(model={self.llm.model}, profile_id={self.profile_id})"
 
-    def __str__(self):
-        return (
-            f"LangChainHandler(model={self.model}, "
-            f"temperature={self.temperature}, "
-            f"max_retries={self.max_retries}),"
-            f"profile_id={self.profile_id}"
-        )
 
     def _init_workflow(self):
         """Define the graph workflow for conversation"""
         workflow = StateGraph(state_schema=MessagesState)
 
-        # Define the function that calls the model
-        def call_model(state: State):
-            prompt = prompt_template.invoke(state)
-            response = self.llm.invoke(prompt)
-            return {"messages": response}  # Append new messages
-
         # Add nodes and edges to the graph
         workflow.add_edge(START, "model")
-        workflow.add_node("model", call_model)
+        workflow.add_node("model", self.call_model)
 
         # Compile with memory persistence
         return workflow.compile(checkpointer=self.memory)
 
-    def init_model(self):
-        """initialise chat model"""
-        return ChatOpenAI(
-            model=self.model,
-            temperature=self.temperature,
-            max_retries=self.max_retries,
-        )
+    def call_model(self,state: State):
+        prompt_template = ChatPromptTemplate.from_messages(state["messages"])
+        response = self.llm.invoke(prompt_template.invoke(state))
+        return {"messages": response}
 
-    def process_chat(self, user_query: str) -> AIResponse:
-        """Analyze journal entry using LangChain with chat history"""
 
-        content = """
-        You are a helpful assistant focused on the well-being of
-        others. Ypu always give accurate information and provide information
-        on how to help others. Especially if you notice a negative mood.
-        If you do not understand, ask for clarification or more context
-        and if you do not know the answer, say so.
-        """
-        system_message = SystemMessage(content=content)
-        config = {"configurable": {"profile_id": self.profile_id}}
+    def process_chat(self, user_query: str):
+        """Process user input through the workflow."""
+        # System message defining assistant behavior
+        system_message = SystemMessage(content="""
+        You are a helpful assistant focused on the well-being of others.
+        You always provide accurate information and support resources.
+        If unsure, ask for clarification or acknowledge uncertainty.
+        """)
 
-        human_message = HumanMessage(user_query)
-        prompt = ChatPromptTemplate.from_messages(
-            messages=[
-                system_message,
-                MessagesPlaceholder(variable_name="messages"),
-                human_message,
-            ]
-        )
-        state = {
-            "messages": self.memory.messages,
-        }
-        chain = prompt | self.llm
-        ai_msg = chain.invoke(state, config=config)
+        config = {"configurable": {"thread_id": self.profile_id}}
 
-        self.memory.add_user_message(user_query)
-        self.memory.add_ai_message(ai_msg.content)
+        # Create input message
+        input_messages = HumanMessage(content=user_query)
+        output_message = self.workflow.invoke(
+            {"messages": input_messages},config)
 
-        self.summarize_chat()
+        ai_message = output_message["messages"][-1].content
+        # Append to memory and construct state
+
+        # Summarize and save the chat
+        self.summarize_chat(ai_message, user_query)
         self.save_chat_history()
 
-        return ai_msg.content
+        # Return the AI's response
+        return ai_message
 
-    def update_chat_history(self, entry: dict):
-        self.chat_history.append(entry)
 
-    def summarize_chat(self):
+    def summarize_chat(self, ai_message, user_query):
         """Summarize the conversation and analyze mood and keywords."""
+        print("Summarizing chat history...")
+        print("-----------------------------")
 
-        chat_text = "\n".join(
-            [entry.content for entry in self.memory.messages]
-        )
-        if not self.chat_summary:
-            self.chat_summary = ""
-        self.chat_summary += chat_text
         prompt = f"""
-        Summarize the following conversation:
-        {self.chat_summary}\n\n
+        Append the chat summary
+        {self.chat_summary}
+        with the query {user_query}
+        and AI response {ai_message}
+        and create a new summary.
         Keep it concise.
         """
+        self.chat_summary = self.llm.invoke(prompt).content
 
-        response = self.llm.invoke([SystemMessage(content=prompt)])
-        self.chat_summary = response.content.strip()
-        return self.memory
+
 
     def save_chat_history(self):
         """Save the conversation to memory for future reference."""
