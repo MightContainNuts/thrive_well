@@ -5,7 +5,7 @@ from flask import (
     jsonify,
 )
 from flask_login import login_required, current_user
-from application.utils.langchain_handler import LangGraphHandler
+from application.langgraph_interface.langchain_handler import LangGraphHandler
 
 
 chat_bp = Blueprint("chat", __name__)
