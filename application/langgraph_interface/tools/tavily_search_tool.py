@@ -39,8 +39,8 @@ def get_tavily_search_tool(search_query: str):
         ]
 
     """
+    print("Starting Tavily Search Tool...")
     api_key = os.getenv("TAVILY_API_KEY")
-    print(api_key)
     retriever = TavilySearchAPIRetriever(api_key=api_key, k=3)
 
     response = retriever.invoke(search_query)
