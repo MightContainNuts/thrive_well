@@ -24,6 +24,9 @@ from application.langgraph_interface.tools.wikipedia_tool import (
 from application.langgraph_interface.tools.tavily_search_tool import (
     get_tavily_search_tool,
 )
+from application.langgraph_interface.tools.calendar_event_tool import (
+    calendar_events_handler,
+)
 from application.utils.db_handler import DBHandler
 from langgraph.prebuilt import create_react_agent
 import uuid
@@ -81,7 +84,12 @@ class LangGraphHandler:
         self.summary = self.db.get_chat_summary_from_db(profile_id) or ""
 
         # Define available tools
-        self.tools = [get_weather, get_wiki_summary, get_tavily_search_tool]
+        self.tools = [
+            get_weather,
+            get_wiki_summary,
+            get_tavily_search_tool,
+            calendar_events_handler,
+        ]
 
         # Build the workflow
         self.workflow = self._build_workflow()
@@ -165,8 +173,7 @@ class LangGraphHandler:
                 return {
                     "messages": [
                         AIMessage(
-                            content="""The message does not conform to the guidelines # noqa E501
-                            (did you mention football?)"""
+                            content="The message does not conform to the guidelines (did you mention football?)"  # noqa: E501
                         )
                     ],
                     "summary": state["summary"],
