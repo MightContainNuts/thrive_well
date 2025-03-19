@@ -96,5 +96,5 @@ pipfile.lock
 pipfile
 poetry.lock
 
-# Ignore any user-installed hooks
+# Ignore any user-installed hooks ...
 .hooks/
