@@ -116,5 +116,5 @@ class ChatSummary(db.Model):
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )
-    summary = db.Column(Text)
+    summary = db.Column(Text),
     timestamp = db.Column(DateTime, default=func.now())

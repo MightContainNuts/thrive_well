@@ -1,15 +1,8 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.tools import tool
 import os
+
 from dotenv import load_dotenv
 from langchain_community.utilities import OpenWeatherMapAPIWrapper
-
-
-load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENWEATHERMAP_API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
-
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+from langchain_core.tools import tool
 
 
 @tool
@@ -40,8 +33,14 @@ def get_weather(city: str):
         15°C with clear skies."
     """
     print(" Agent is calling the OpenWeatherMapAPIWrapper")
+    load_dotenv()
     weather = OpenWeatherMapAPIWrapper(
         openweathermap_api_key=os.getenv("OPENWEATHERMAP_API_KEY")
     )
     weather_data = weather.run(city)
     return weather_data
+
+
+
+if __name__ == "__main__":
+    print(get_weather.invoke("Berlin"))
