@@ -1,14 +1,12 @@
-from enum import Enum as PyEnum
 import uuid
+from enum import Enum as PyEnum
 
+from flask_login import UserMixin
 from sqlalchemy import Enum as SQLEnum, String, DateTime, Text, JSON
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-
-
 
 from application.utils.extensions import db
 
@@ -116,5 +114,5 @@ class ChatSummary(db.Model):
     profile_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey("profiles.profile_id")
     )
-    summary = db.Column(Text),
+    summary = db.Column(Text)
     timestamp = db.Column(DateTime, default=func.now())
