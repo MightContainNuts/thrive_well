@@ -1,35 +1,31 @@
+import json
+import uuid
+from pathlib import Path
 from typing import Sequence, Annotated, Dict, Any
-from langgraph.graph.message import add_messages
+
+from dotenv import load_dotenv
 from langchain_core.messages import (
     BaseMessage,
     HumanMessage,
     AIMessage,
     SystemMessage,
 )
-from langgraph.graph import START, END, StateGraph
-from langgraph.checkpoint.memory import MemorySaver
-from typing_extensions import TypedDict
-import json
-from pathlib import Path
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
 from langchain_core.vectorstores import InMemoryVectorStore
+from langchain_openai import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
-from application.langgraph_interface.tools.open_weather_map_tool import (
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import START, END, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.prebuilt import create_react_agent
+from typing_extensions import TypedDict
+
+from application.langgraph_interface.tools import (
     get_weather,
-)
-from application.langgraph_interface.tools.wikipedia_tool import (
     get_wiki_summary,
-)
-from application.langgraph_interface.tools.tavily_search_tool import (
     get_tavily_search_tool,
-)
-from application.langgraph_interface.tools.calendar_event_tool import (
-    calendar_events_handler,
+    calendar_events_handler
 )
 from application.utils.db_handler import DBHandler
-from langgraph.prebuilt import create_react_agent
-import uuid
 
 load_dotenv()
 
@@ -88,7 +84,7 @@ class LangGraphHandler:
             get_weather,
             get_wiki_summary,
             get_tavily_search_tool,
-            calendar_events_handler,
+            calendar_events_handler
         ]
 
         # Build the workflow
@@ -131,6 +127,7 @@ class LangGraphHandler:
         workflow.add_node("agent", agent)
         workflow.add_node("summarize", self._update_summary)
         workflow.add_node("save_summary", self._save_summary_to_db)
+        workflow.add_node("evaluate_response", self._evaluate_response)
 
         # Add edges between nodes
         workflow.add_edge(START, "validate")
@@ -141,7 +138,8 @@ class LangGraphHandler:
             else END,
         )
         workflow.add_edge("agent", "summarize")
-        workflow.add_edge("summarize", "save_summary")
+        workflow.add_edge("summarize", "evaluate_response")
+        workflow.add_edge("evaluate_response", "save_summary")
         workflow.add_edge("save_summary", END)
 
         # Compile the workflow with MemorySaver
@@ -238,6 +236,27 @@ class LangGraphHandler:
         except Exception as e:
             print(f"Error saving summary to database: {e}")
         return state
+
+    def _evaluate_response(self, state: State) -> State:
+        "evaluate response against query"
+        print("Evaluating response")
+
+        user_query = state["messages"][-2].content
+        ai_response = state["messages"][-1].content
+
+        evaluation_prompt = f"""
+
+    Evaluate, how well the generated response {ai_response} fulfills the given query {user_query}.
+    Compares the generated response to the input query and calculate the degree to which the response satisfies the 
+    query's intent and content. The result is returned as a percentage, where 100% indicates a perfect match and 
+    lower values indicate partial fulfillment of the query.
+    """
+
+        response = self.llm.invoke(
+            [SystemMessage(content=evaluation_prompt)]
+        )
+        print(response.content)
+
 
     def process_chat(self, user_message: str) -> str:
         """Process user input through workflow and return the AI's response."""
