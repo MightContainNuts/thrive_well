@@ -19,11 +19,12 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import create_react_agent
 from typing_extensions import TypedDict
 
+from application.langgraph_interface.structured_outputs import EvaluationResponse
 from application.langgraph_interface.tools import (
     get_weather,
     get_wiki_summary,
     get_tavily_search_tool,
-    calendar_events_handler
+    calendar_events_handler,
 )
 from application.utils.db_handler import DBHandler
 
@@ -248,14 +249,16 @@ class LangGraphHandler:
 
     Evaluate, how well the generated response {ai_response} fulfills the given query {user_query}.
     Compares the generated response to the input query and calculate the degree to which the response satisfies the 
-    query's intent and content. The result is returned as a percentage, where 100% indicates a perfect match and 
-    lower values indicate partial fulfillment of the query.
+    query's intent and content. The result (evaluation_success) is returned as an integer between 0 and 100, where 100
+    indicates a perfect match and lower values indicate partial fulfillment of the query.
     """
 
         response = self.llm.invoke(
-            [SystemMessage(content=evaluation_prompt)]
+            [SystemMessage(content=evaluation_prompt)],
+            response_format=EvaluationResponse,
         )
-        print(response.content)
+        data = json.loads(response.content)
+        print(f"Response accuracy: {data['evaluation_success']} %")
 
 
     def process_chat(self, user_message: str) -> str:

@@ -1,13 +1,13 @@
-from application.utils.extensions import db
+from datetime import datetime
+from typing import Optional, Union
+
 from application.db.models import (
     User,
     Profile,
     Journal,
     ChatSummary,
 )
-from datetime import datetime
-from typing import Optional, Union
-
+from application.utils.extensions import db
 
 dt = datetime.now()
 formatted_dt = dt.strftime("%Y-%m-%d %H:%M")
@@ -56,13 +56,11 @@ class DBHandler:
             summary=summary,
             timestamp=formatted_dt,
         )
-        print(
-            f"""
-        chat_history: {profile_id}:
-        ----------------
-        {summary}
-        ----------------"""
-        )
+        print(f"chat_history: {profile_id}:")
+        print("-"*50)
+        print(summary)
+        print("-"*50)
+
         self.add_and_commit(chat_history)
 
     def get_chat_summary_from_db(
