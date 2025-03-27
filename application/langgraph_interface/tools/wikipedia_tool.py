@@ -1,10 +1,10 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.tools import tool
 import os
+
 from dotenv import load_dotenv
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
-
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -38,7 +38,7 @@ def get_wiki_summary(topic: str):
         retrieve a summary of the Python programming language  and the URL from
         Wikipedia and present it to the user.
     """
-    print(" Agent is calling the WikipediaQueryRun")
+    print("Agent is calling the WikipediaQueryRun")
     api_wrapper = WikipediaAPIWrapper(
         top_k_results=1, doc_content_chars_max=100
     )
